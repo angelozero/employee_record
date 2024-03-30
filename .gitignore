@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+./employee-record/package-lock.json
+./employee-record/package.json
+
 # dependencies
 ./employee-record/node_modules
 ./employee-record/.pnp
