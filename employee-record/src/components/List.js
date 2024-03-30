@@ -48,7 +48,6 @@ const List = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Atualize os filtros com os valores dos campos de entrada
         const formData = new FormData(e.target);
         const updatedFilters = {
             page: 1,
@@ -64,7 +63,6 @@ const List = () => {
         <div className="container">
             <h3>Detalhes dos Funcionários</h3>
 
-            {/* Formulário de filtros */}
             <form onSubmit={handleSubmit} className="filter-form">
                 <h4>Filtros para consulta</h4>
                 <div className="form-group">
@@ -110,17 +108,18 @@ const List = () => {
                         })
                     ) : (
                         <tr>
-                            <td colSpan="5">No user data available</td>
+                            <td colSpan="5">Não há registro de funcionário</td>
                         </tr>
                     )}
                 </tbody>
             </table>
 
-            {/* Componentes de paginação */}
             <div className="pagination">
                 <button disabled={userData && userData.page <= 1} onClick={() => handlePageChange(userData && userData.page - 1)}>Anterior</button>
                 <span> página {userData && userData.page} de {userData && userData.total_pages !== 0 ? userData.total_pages : 1} </span>
-                <button disabled={userData && userData.page === userData.total_pages || userData.page === 1} onClick={() => handlePageChange(userData && userData.page + 1)}>Próximo</button>
+                {console.log(userData.page)}
+                {console.log(userData.total_pages)}
+                <button disabled={userData && userData.page === userData.total_pages || userData.total_pages === 0} onClick={() => handlePageChange(userData && userData.page + 1)}>Próximo</button>
             </div>
         </div>
     );
