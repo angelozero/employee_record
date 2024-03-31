@@ -4,6 +4,9 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import './css/list.css';
+import './css/modal.css';
+import View from './View';
+
 
 const List = () => {
     const [userData, setUserData] = useState([]);
@@ -14,6 +17,14 @@ const List = () => {
         nome: '',
         email: ''
     });
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+    const [showModalView, setShowModalView] = useState(false);
+
+    const handleViewClick = (id) => {
+        setSelectedEmployeeId(id);
+        setShowModalView(true);
+    };
+
 
     useEffect(() => {
         fetchData();
@@ -34,7 +45,7 @@ const List = () => {
             await axios.delete(`http://127.0.0.1:5000/funcionario/${id}`);
             const newUserData = userData.results.filter((item) => item.id !== id);
             setUserData({ ...userData, results: newUserData });
-            toast.success('Funionário excluído com sucesso.');
+            toast.success('Funcionário excluído com sucesso.');
         } catch (error) {
             console.error('Falha:', error);
             toast.error('Falha ao excluir o registro do funcionário.');
@@ -98,8 +109,9 @@ const List = () => {
                                     <td>{employee.email}</td>
                                     <td>{employee.department.name}</td>
                                     <td>
-                                        <NavLink to={`/view/${employee.id}`} className="btn btn-success mx-2">View</NavLink>
-                                        <NavLink to={`/edit/${employee.id}`} className="btn btn-info mx-2">Edit</NavLink>
+                                        <button className="btn btn-info mx-2" variant="success" onClick={() => {
+                                            handleViewClick(employee.id)
+                                        }}>Info</button>
                                         <button onClick={() => handleDelete(employee.id)} className="btn btn-danger">Delete</button>
                                     </td>
                                 </tr>
@@ -118,6 +130,15 @@ const List = () => {
                 <span> página {userData && userData.page} de {userData && userData.total_pages !== 0 ? userData.total_pages : 1} </span>
                 <button disabled={(userData && userData.page === userData.total_pages) || userData.total_pages === 0} onClick={() => handlePageChange(userData && userData.page + 1)}>Próximo</button>
             </div>
+
+            {showModalView && (
+                <div className="modal-background">
+                    <div className="modal-content">
+                        <button className="close-modal-btn" onClick={() => setShowModalView(false)}>Fechar</button>
+                        <View employeeId={selectedEmployeeId} onClose={() => setShowModalView(false)} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
