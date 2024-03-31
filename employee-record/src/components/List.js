@@ -23,10 +23,9 @@ const List = () => {
         try {
             const { page, total, departamento, nome, email } = filters;
             const result = await axios.get(`http://127.0.0.1:5000/funcionarios?pagina=${page}&total=${total}&departamento=${departamento}&nome=${nome}&email=${email}`);
-            console.log(result.data);
             setUserData(result.data);
         } catch (err) {
-            console.log("something went wrong");
+            console.log("Falha na consulta de funcionarios", err.response);
         }
     };
 
@@ -117,9 +116,7 @@ const List = () => {
             <div className="pagination">
                 <button disabled={userData && userData.page <= 1} onClick={() => handlePageChange(userData && userData.page - 1)}>Anterior</button>
                 <span> página {userData && userData.page} de {userData && userData.total_pages !== 0 ? userData.total_pages : 1} </span>
-                {console.log(userData.page)}
-                {console.log(userData.total_pages)}
-                <button disabled={userData && userData.page === userData.total_pages || userData.total_pages === 0} onClick={() => handlePageChange(userData && userData.page + 1)}>Próximo</button>
+                <button disabled={(userData && userData.page === userData.total_pages) || userData.total_pages === 0} onClick={() => handlePageChange(userData && userData.page + 1)}>Próximo</button>
             </div>
         </div>
     );

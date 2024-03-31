@@ -1,20 +1,27 @@
-import './css/home.css';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import List from './List';
-import React, { useState, useEffect } from 'react';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './css/home.css';
 
 const Home = () => {
-
     const [userData, setUserData] = useState([]);
+    const [userField, setUserField] = useState({
+        name: "",
+        second_name: "",
+        email: "",
+        department_id: ""
+    });
+
+    const [loading, setLoading] = useState(false);
 
     const fetchData = async () => {
         try {
             const result = await axios.get(`http://127.0.0.1:5000/departamentos`);
-            console.log(result.data);
             setUserData(result.data);
         } catch (err) {
-            console.log("something went wrong");
+            console.log("falha ao consultar departamentos");
         }
     };
 
@@ -22,33 +29,30 @@ const Home = () => {
         fetchData();
     }, []);
 
-    const [userField, setUserField] = useState({
-        name: "",
-        email: "",
-        password: ""
-    });
-
     const changeUserFieldHandler = (e) => {
+        const { name, value } = e.target;
+        const newValue = name === 'department_id' ? parseInt(value, 10) : value;
         setUserField({
             ...userField,
-            [e.target.name]: e.target.value
+            [name]: newValue
         });
-
-    }
-    const [loading, setLoading] = useState()
+    };
 
     const onSubmitChange = async (e) => {
         e.preventDefault();
         try {
-            const responce = await axios.post("http://127.0.0.1:5000/funcionario", userField);
-            console.log(responce)
+            console.log("salvando")
+            console.log(userField)
+            const response = await axios.post("http://127.0.0.1:5000/funcionario", userField);
             setLoading(true);
+            toast.success('Funcionário cadastrado com sucesso.');
         } catch (err) {
-            console.log("Something Wrong");
+            toast.error('Falha: ' + err.response.data.error);
         }
-    }
+    };
+
     if (loading) {
-        return <Home />
+        return <Home />;
     }
 
     return (
@@ -59,39 +63,36 @@ const Home = () => {
                     <h3>Cadastrar um funcionário</h3>
                     <form>
                         <div className="form-group">
-                            <label htmlFor="firstName">Nome:</label>
-                            <input type="text" id="name" placeholder="" name="firstName" onChange={e => changeUserFieldHandler(e)} />
+                            <label htmlFor="name">Nome:</label>
+                            <input type="text" id="name" placeholder="" name="name" onChange={e => changeUserFieldHandler(e)} />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="secondName">Sobrenome:</label>
-                            <input type="text" id="second_name" placeholder="" name="secondName" onChange={e => changeUserFieldHandler(e)} />
+                            <label htmlFor="second_name">Sobrenome:</label>
+                            <input type="text" id="second_name" placeholder="" name="second_name" onChange={e => changeUserFieldHandler(e)} />
                         </div>
                         <div className="form-group">
                             <label htmlFor="email">Email:</label>
                             <input type="email" id="email" placeholder="" name="email" onChange={e => changeUserFieldHandler(e)} required />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="department">Departamento:</label>
-                            <select id="department" name="department" onChange={e => changeUserFieldHandler(e)} required>
-                                <option value="">Selecione o departamento</option>
+                            <label htmlFor="department_id">Departamento:</label>
+                            <select id="department_id" name="department_id" onChange={e => changeUserFieldHandler(e)} required>
+                            <option value="">Selecione o departamento</option>
                                 {userData && userData.map((department, index) => (
                                     <option key={index} value={department.id}>{department.name}</option>
                                 ))}
                             </select>
                         </div>
-
-
                         <button type="submit" className="btn btn-primary" onClick={e => onSubmitChange(e)}>Cadastrar</button>
                     </form>
                 </div>
-                {<div className='list-container'>
+                <div className='list-container'>
                     <List />
-                    <ToastContainer />
-                </div>}
+                </div>
             </div>
+            <ToastContainer />
         </div>
     );
 };
-
 
 export default Home;
