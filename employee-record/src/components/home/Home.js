@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import List from './List';
+import List from '../list/List';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './css/home.css';
+import './home.css';
 
 const Home = () => {
     const [userData, setUserData] = useState([]);

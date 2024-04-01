@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import './css/view.css';
+import './view.css';
 
 const View = ({ employeeId }) => {
     const [employee, setEmployee] = useState({});

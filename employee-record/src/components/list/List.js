@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
-import './css/list.css';
-import './css/modal.css';
-import View from './View';
+import './list.css';
+import './modal.css';
+import View from '../view/View';
 
 
 const List = () => {
