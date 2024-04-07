@@ -1,25 +1,23 @@
-.container {
+.home-container {
     max-width: 960px;
     margin: 0 auto;
     padding: 20px;
     text-align: center;
-    padding: 20px;
 }
-
+.container {
+    display: flex;
+    flex-direction: column;
+}
+.home-container .page-title {
+    margin: 16px 0;
+}
+.nav-link {
+    color: #007bff;
+    cursor: pointer;
+}
 .form-container {
     display: flex;
     justify-content: center;
-}
-
-.form-box {
-    width: 300px;
-}
-
-.form-container form {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    
 }
 
 .form-group {
@@ -33,11 +31,6 @@
 .form-group input {
     margin-bottom: 10px;
 }
-
-.list-container {
-    margin-left: 20px;
-}
-
 
 .form-group {
     margin-bottom: 20px;
@@ -54,7 +47,9 @@
 .btn-primary:hover {
     background-color: #0056b3;
 }
-
+.list-container .page-title {
+    margin: 2em 0;
+}
 .list-group {
     margin-top: 20px;
 }

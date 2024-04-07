@@ -1,48 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import 'react-toastify/dist/ReactToastify.css';
+import View from '../view/View';
+import Filter from '../filter/Filter';
 import './list.css';
 import './modal.css';
-import View from '../view/View';
 
 
-const List = () => {
-    const [userData, setUserData] = useState([]);
-    const [filters, setFilters] = useState({
+const List = React.memo(({ showRegister }) => {
+    const [userData, setUserData] = React.useState([]);
+    const [filters, setFilters] = React.useState({
         page: 1,
         total: 5,
         departamento: '',
         nome: '',
         email: ''
     });
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
-    const [showModalView, setShowModalView] = useState(false);
+    const [selectedEmployeeId, setSelectedEmployeeId] = React.useState(null);
+    const [showModalView, setShowModalView] = React.useState(false);
 
     const handleViewClick = (id) => {
         setSelectedEmployeeId(id);
         setShowModalView(true);
     };
 
-
-    useEffect(() => {
-        fetchData();
-    }, [filters]);
-
-    const fetchData = async () => {
+    const fetchData = React.useCallback(async () => {
         try {
             const { page, total, departamento, nome, email } = filters;
-            const result = await axios.get(`http://127.0.0.1:5000/funcionarios?pagina=${page}&total=${total}&departamento=${departamento}&nome=${nome}&email=${email}`);
+            const result = await axios.get(`http://127.0.0.1:8080/funcionarios?pagina=${page}&total=${total}&departamento=${departamento}&nome=${nome}&email=${email}`);
             setUserData(result.data);
         } catch (err) {
             console.log("Falha na consulta de funcionarios", err.response);
         }
-    };
+    }, [filters]);
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`http://127.0.0.1:5000/funcionario/${id}`);
-            const newUserData = userData.results.filter((item) => item.id !== id);
+            await axios.delete(`http://127.0.0.1:8080/funcionario/${id}`);
+            const newUserData = userData?.results.filter((item) => item.id !== id);
             setUserData({ ...userData, results: newUserData });
             toast.success('Funcionário excluído com sucesso.');
         } catch (error) {
@@ -68,78 +63,76 @@ const List = () => {
         setFilters(updatedFilters);
     };
 
+    React.useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
     return (
-        <div className="container">
-            <h3>Detalhes dos Funcionários</h3>
+        <>
+            <div className='list-container'>
+                <h3 className='page-title'>Detalhes dos Funcionários</h3>
 
-            <form onSubmit={handleSubmit} className="filter-form">
-                <h4>Filtros para consulta</h4>
-                <div className="form-group">
-                    <label htmlFor="departamento">Departamento:</label>
-                    <input type="text" id="departamento" name="departamento" />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="nome">Nome:</label>
-                    <input type="text" id="nome" name="nome" />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="email">Email:</label>
-                    <input type="email" id="email" name="email" />
-                </div>
-                <button type="submit">Pesquisar</button>
-            </form>
+                {userData?.results?.length > 0 && (
+                    <Filter handleSubmit={handleSubmit} />
+                )}
 
-            <table className="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Email</th>
-                        <th>Departamento</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {userData && userData.results ? (
-                        userData.results.map((employee, i) => {
-                            return (
-                                <tr key={i}>
-                                    <td>{employee.id}</td>
-                                    <td>{employee.name}</td>
-                                    <td>{employee.email}</td>
-                                    <td>{employee.department.name}</td>
-                                    <td>
-                                        <button className="btn btn-info mx-2" variant="success" onClick={() => {
-                                            handleViewClick(employee.id)
-                                        }}>Info</button>
-                                        <button onClick={() => handleDelete(employee.id)} className="btn btn-danger">Delete</button>
-                                    </td>
-                                </tr>
-                            );
-                        })
-                    ) : (
+                <table className="table table-bordered">
+                    <thead>
                         <tr>
-                            <td colSpan="5">Não há registro de funcionário</td>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Departamento</th>
                         </tr>
-                    )}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {userData?.results ? (
+                            userData?.results
+                                //.sort((a, b) => a.name.localeCompare(b.name))
+                                .map((employee, i) => {
+                                    return (
+                                        <tr key={i}>
+                                            <td>{employee.id}</td>
+                                            <td>{employee.name}</td>
+                                            <td>{employee.email}</td>
+                                            <td>{employee.department.name}</td>
+                                            <td>
+                                                <button className="btn btn-info mx-2" variant="success" onClick={() => {
+                                                    handleViewClick(employee.id)
+                                                }}>Info</button>
+                                                <button onClick={() => handleDelete(employee.id)} className="btn btn-danger">Delete</button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                        ) : (
+                            <tr>
+                                <td colSpan="5">Não há registro de funcionário</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
 
-            <div className="pagination">
-                <button disabled={userData && userData.page <= 1} onClick={() => handlePageChange(userData && userData.page - 1)}>Anterior</button>
-                <span> página {userData && userData.page} de {userData && userData.total_pages !== 0 ? userData.total_pages : 1} </span>
-                <button disabled={(userData && userData.page === userData.total_pages) || userData.total_pages === 0} onClick={() => handlePageChange(userData && userData.page + 1)}>Próximo</button>
-            </div>
-
-            {showModalView && (
-                <div className="modal-background">
-                    <div className="modal-content">
-                        <button className="close-modal-btn" onClick={() => setShowModalView(false)}>Fechar</button>
-                        <View employeeId={selectedEmployeeId} onClose={() => setShowModalView(false)} />
+                {userData?.results?.length > 0 && (
+                    <div className="pagination">
+                        <button disabled={userData && userData.page <= 1} onClick={() => handlePageChange(userData && userData.page - 1)}>Anterior</button>
+                        <span> página {userData && userData.page} de {userData && userData.total_pages !== 0 ? userData.total_pages : 1} </span>
+                        <button disabled={(userData && userData.page === userData.total_pages) || userData.total_pages === 0} onClick={() => handlePageChange(userData && userData.page + 1)}>Próximo</button>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+
+                {showModalView && (
+                    <div className="modal-background">
+                        <div className="modal-content">
+                            <button className="close-modal-btn" onClick={() => setShowModalView(false)}>Fechar</button>
+                            <View employeeId={selectedEmployeeId} onClose={() => setShowModalView(false)} />
+                        </div>
+                    </div>
+                )}
+            </div>
+            <p className='nav-link' onClick={() => showRegister(true)}>Cadastrar funcionario</p>
+        </>
     );
-};
+});
 
 export default List;

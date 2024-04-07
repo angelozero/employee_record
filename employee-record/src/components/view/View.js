@@ -1,25 +1,21 @@
+import React from 'react';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import './view.css';
 
 const View = ({ employeeId }) => {
-    const [employee, setEmployee] = useState({});
-    const [isEditing, setIsEditing] = useState(false); // Estado para controlar a edição
+    const [employee, setEmployee] = React.useState({});
+    const [isEditing, setIsEditing] = React.useState(false); // Estado para controlar a edição
 
-    useEffect(() => {
-        fetchEmployee();
-    }, [employeeId]);
-
-    const fetchEmployee = async () => {
+    const fetchEmployee = React.useCallback(async () => {
         try {
-            const result = await axios.get(`http://127.0.0.1:5000/funcionario/${employeeId}`);
-            console.log(result.data);
-            setEmployee(result.data);
+            const result = await axios.get(`http://127.0.0.1:8080/funcionario/${employeeId}`);
+            console.log(result?.data);
+            setEmployee(result?.data);
         } catch (err) {
             console.log("Falha ao consultar funcionário");
         }
-    }
+    }, [employeeId]);
 
     const handleEdit = () => {
         setIsEditing(true);
@@ -28,7 +24,7 @@ const View = ({ employeeId }) => {
     const handleSave = async () => {
         setIsEditing(false);
         try {
-            await axios.put(`http://127.0.0.1:5000/funcionario/${employeeId}`, employee);
+            await axios.put(`http://127.0.0.1:8080/funcionario/${employeeId}`, employee);
             console.log("Funcionário atualizado com sucesso.");
             toast.success('Funcionário atualizado com sucesso.');
         } catch (err) {
@@ -44,6 +40,11 @@ const View = ({ employeeId }) => {
             [name]: value
         });
     };
+
+
+    React.useEffect(() => {
+        fetchEmployee();
+    }, [fetchEmployee]);
 
     return (
         <div>

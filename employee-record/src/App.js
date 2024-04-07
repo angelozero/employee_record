@@ -1,12 +1,12 @@
 import Home from './components/home/Home';
-import { BrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Home />
-      </BrowserRouter>
+      <Home />
+      <ToastContainer />
     </div>
   );
 }
