@@ -3,19 +3,35 @@
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   padding: 8px;
   text-align: left;
 }
 
+th:last-child,
+td:last-child {
+  text-align: right;
+}
+
+th:nth-child(1) {
+  min-width: 30px;
+}
+
+th:nth-child(2),
+th:nth-child(3),
+th:nth-child(4) {
+  width: 250px;
+}
+
 th {
-  background-color: #f2f2f2;
+  background-color: var(--gray-light);
 }
 
 tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: var(--gray-light);
 }
 
 tr:hover {
-  background-color: #ddd;
+  background-color: var(--gray);
 }

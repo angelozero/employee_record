@@ -1,10 +1,11 @@
 import React from 'react'
-import axios from 'axios';
 import './register.css'
 import { toast } from 'react-toastify';
+import { HTTPClient } from '../../utils/http/HTTPClient';
+import { Department } from '../department/Department';
 
 
-export const Register = React.memo(function ({ userData, setLoading, showRegister }) {
+export const Register = React.memo(function ({ setLoading, showRegister }) {
 	const [userField, setUserField] = React.useState({
 		name: "",
 		second_name: "",
@@ -26,7 +27,7 @@ export const Register = React.memo(function ({ userData, setLoading, showRegiste
 		setLoading(true);
 		try {
 			console.log("salvando")
-			await axios.post("http://127.0.0.1:8080/funcionario", userField);
+			await HTTPClient.post('funcionario', userField);
 			setLoading(true);
 			showRegister(false);
 			toast.success('Funcionário cadastrado com sucesso.');
@@ -38,7 +39,7 @@ export const Register = React.memo(function ({ userData, setLoading, showRegiste
 
 	return (
 		<>
-			<div className='register-container'>
+			<div className='register-container paper'>
 				<h3 className='page-title'>Cadastrar um funcionário</h3>
 				<div className='form-box'>
 					<form className='register-form'>
@@ -54,16 +55,10 @@ export const Register = React.memo(function ({ userData, setLoading, showRegiste
 							<label htmlFor="email">Email:</label>
 							<input type="email" id="email" placeholder="" name="email" onChange={changeUserFieldHandler} required />
 						</div>
-						<div className="form-group">
-							<label htmlFor="department_id">Departamento:</label>
-							<select id="department_id" name="department_id" onChange={changeUserFieldHandler} required>
-								<option value="">Selecione o departamento</option>
-								{userData?.map((department, index) => (
-									<option key={index} value={department.id}>{department.name}</option>
-								))}
-							</select>
+						<div className='form-group'>
+							<Department changeUserFieldHandler={changeUserFieldHandler} />
 						</div>
-						<button type="submit" className="btn btn-primary" onClick={handleSubmit}>Cadastrar</button>
+						<button type="submit" className="btn btn-primary btn-register" onClick={handleSubmit}>Cadastrar</button>
 					</form>
 				</div>
 			</div>
